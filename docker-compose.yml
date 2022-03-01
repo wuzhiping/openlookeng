@@ -1,3 +1,45 @@
 version: '2'
 services:
+  openLK:
+    image: shawoo/openlookeng:1.4.1
+    restart: always
+    environment:
+     - VER=3
+    #ports:
+    #  - 8090:8090
+    depends_on:
+      - mongo
+      - mysqlmaster
+      - redisdb
+    links:
+      - mongo
+      - mysqlmaster
+      - redisdb
+    volumes:
+      - ./openlookeng/etc:/opt/openlookeng/hetu-server/etc
+      - ./presto/presto/catalog/mongodb.properties:/opt/openlookeng/hetu-server/etc/catalog/mongodb.properties
+      - ./presto/presto/catalog/mysqlmaster.properties:/opt/openlookeng/hetu-server/etc/catalog/mysqlmaster.properties
+    stdin_open: true
+    tty: true
+
+  presto:
+    image: starburstdata/presto
+    restart: always
+    environment:
+     - VER=3
+    #ports:
+    #  - 9999:8080
+    depends_on:
+      - mongo
+      - mysqlmaster
+      - redisdb
+    links:
+      - mongo
+      - mysqlmaster
+      - redisdb
+    volumes:
+      - ./presto/presto/presto-cli-0.265-executable.jar:/usr/bin/presto-cli
+      - ./presto/presto/catalog:/usr/lib/presto/etc/catalog
+    stdin_open: true
+    tty: true
 
